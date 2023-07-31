@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jafa.repository.ToDoRepository">
+	
+	<!-- 오늘 날짜 -->
+	<select id="getCurrentDate" resultType="java.util.Date"> 
+		select sysdate from dual 
+	</select> 
+	
+	<!-- 선택한 달 전체 목록입니다. -->
+	<select id="selectAllByMonth" resultType="toDoVO">
+		select * from todo_table
+		where todoDate
+		between to_date(#{date},'yyyyMMdd')
+		and last_day(to_date(#{date},'yyyyMMdd'))
+	</select>
+	
+	<!-- 하루꺼만 선택 -->
+	<select id="selectOne" resultType="toDoVO">
+		select * from todo_table
+		where todoDate
+		between to_date(#{date},'yyyyMMdd')
+		and to_date(to_date(#{date},'yyyyMMdd'))
+	</select>
+	
+	<!-- 일정 추가하기 -->
+	<insert id="saveToDo">
+		insert into todo_table(id,memo,toDoDate)
+		values(todo_seq.nextval,#{memo},to_date(#{toDoDate},'yyyyMMdd'))
+	</insert>
+	
+	<!-- 일정 삭제하기 -->
+	<delete id="delToDo">
+		delete from todo_table where id=#{id}
+	</delete>
+	
+	<!-- 일정 수정하기 -->
+	<update id="updateToDo">
+		update todo_table set memo=#{newMemo} where id=#{id}
+	</update>
+	
+	<select id="findId" resultType="toDoVO">
+		select * from(select id,memo,todoDate from todo_table where todoDate between to_date(#{toDoDate},'yyyyMMdd')
+		and to_date(to_date(#{toDoDate},'yyyyMMdd'))) WHERE memo = #{memo}
+	</select>
+	
+	
+
+</mapper>
